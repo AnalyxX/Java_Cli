@@ -3,14 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.br.api.dados;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 /**
  *
  * @author Leonardo
@@ -25,7 +23,7 @@ public class Logger {
         String caminhoCompletoArquivoLog = caminhoArquivo + File.separator + nomeArquivoLog;
         arquivoLog = new FileWriter(nomeArquivoLog, true);
         data = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
+        
     }
 
     public void logInfo(String message) {
@@ -37,20 +35,10 @@ public class Logger {
             e.printStackTrace();
         }
     }
-
-    public void logWarning(String message) {
+    
+        public void logErro(String message) {
         try {
-            String logMessageInfo = "[" + getFormattedDate() + "] " + "[WARNING] " + message + "\n";
-            arquivoLog.write(logMessageInfo);
-            arquivoLog.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void logErro(String message) {
-        try {
-            String logMessageInfo = "[" + getFormattedDate() + "] " + "[ERROR] " + message + "\n";
+            String logMessageInfo = "[" + getFormattedDate() + "] " + "[ERRO] " + message + "\n";
             arquivoLog.write(logMessageInfo);
             arquivoLog.flush();
         } catch (IOException e) {
