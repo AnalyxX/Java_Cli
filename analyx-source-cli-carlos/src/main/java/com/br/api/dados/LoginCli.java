@@ -48,7 +48,7 @@ public class LoginCli {
             System.out.println("Bem vindo de volta!");
             String hostName = looca.getRede().getParametros().getHostName();
             emDAO.cadastroDaMaquina(hostName, user.getFuncionario());
-            emDAO.cadastroDaMaquinaLocal(hostName);
+            //emDAO.cadastroDaMaquinaLocal(hostName);
             log.logInfo("Login efetuado user: " + email + " Maquina: " + emDAO.getEspecificacaoMaquinaPorHostNameAzure(hostName));
             ApiCli apiCli = new ApiCli();
             apiCli.startApp();
