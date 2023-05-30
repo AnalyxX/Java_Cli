@@ -9,7 +9,6 @@ import com.br.api.banco.jdbc.Memoria;
 import com.br.api.dados.Logger;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
-import java.io.IOException;
 import java.util.List;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,7 +26,8 @@ public class EspecificacaoMaquinaController {
     Conexao conexao = new Conexao();
 
     JdbcTemplate con = conexao.getConexaoDoBanco();
-    Logger log;
+    private Logger log;
+
     Looca looca = new Looca();
     CpuController cpuDAO = new CpuController();
     DiscoController discoDAO = new DiscoController();
@@ -47,13 +47,10 @@ public class EspecificacaoMaquinaController {
     }
 
     public EspecificacaoMaquina cadastroDaMaquina(String hostName, Integer fkUsuario) {
-        
         try {
             log = new Logger("logAnalyx.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
-
         List<EspecificacaoMaquina> cadastro = conAzure.query("select id, "
                 + "hostName, "
                 + "fkCpu as cpu, "
@@ -75,7 +72,6 @@ public class EspecificacaoMaquinaController {
             cpuDAO.insertCpuMaquinaAzure(looca.getProcessador().getNome());
             discoDAO.insertDiscoMaquinaAzure(total);
             memoriaDAO.insertMemoriaMaquinaAzure(totalRam);
-            
             System.out.println("A máquina foi cadastrada na Azure");
 
             Cpu cpu = conAzure.queryForObject("select id, modeloCPU from cpu "
@@ -102,7 +98,7 @@ public class EspecificacaoMaquinaController {
             EspecificacaoMaquina maquina = getEspecificacaoMaquinaPorHostNameAzure(hostName);
 
             funcionarioDAO.vincularMaquinaAzure(maquina.getId(), fkUsuario);
-            log.logInfo("A máquina foi cadastrada na Azure. Maquina: "+ getEspecificacaoMaquinaPorHostNameAzure(hostName));
+            log.logInfo("Máquina cadastrada na Azure: " + maquina);
             return conAzure.queryForObject("select id, "
                     + "hostName, "
                     + "fkCpu as cpu, "
@@ -125,7 +121,10 @@ public class EspecificacaoMaquinaController {
     }
 
     public EspecificacaoMaquina cadastroDaMaquinaLocal(String hostName) {
-
+        try {
+            log = new Logger("logAnalyx.txt");
+        } catch (Exception e) {
+        }
         List<EspecificacaoMaquina> cadastro = con.query("select id, "
                 + "hostName, "
                 + "fkCpu as cpu, "
@@ -169,7 +168,7 @@ public class EspecificacaoMaquinaController {
                     cpu.getId(),
                     disco.getId(),
                     ram.getId());
-            log.logInfo("A máquina foi cadastrada no Mysql local. Maquina: "+ getEspecificacaoMaquinaPorHostNameAzure(hostName));
+            log.logInfo("Máquina cadastrada Mysql local: " + hostName);
             return con.queryForObject("select id, "
                     + "hostName, "
                     + "fkCpu as cpu, "

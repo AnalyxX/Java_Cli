@@ -1,12 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.br.api.dados;
 
 import com.br.api.banco.jdbc.AlertaLimite;
 import com.br.api.banco.jdbc.EspecificacaoMaquina;
 import com.br.api.banco.jdbc.Monitoramento;
+import com.br.api.banco.jdbc.Slack;
 import com.br.api.banco.jdbc.controller.AlertaController;
 import com.br.api.banco.jdbc.controller.AlertaLimiteController;
 import com.br.api.banco.jdbc.controller.CpuController;
@@ -15,6 +13,7 @@ import com.br.api.banco.jdbc.controller.EspecificacaoMaquinaController;
 import com.br.api.banco.jdbc.controller.MemoriaController;
 import com.br.api.banco.jdbc.controller.MonitoramentoController;
 import com.br.api.banco.jdbc.controller.PacoteController;
+import com.br.api.banco.jdbc.controller.SlackController;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
@@ -30,10 +29,10 @@ import org.json.JSONObject;
 
 /**
  *
- * @author Leonardo
+ * @author Carlos
  */
-public class AppDados {
-   public void startApp() throws InterruptedException, IOException{
+public class ApiCli {
+    public void startApp() throws InterruptedException, IOException{
         MonitoramentoController monitoramentoDAO = new MonitoramentoController();
         CpuController cpuDAO = new CpuController();
         DiscoController discoDAO = new DiscoController();
@@ -44,6 +43,10 @@ public class AppDados {
         AlertaController alertaDAO  = new AlertaController();
         Looca looca = new Looca();
         JSONObject json = new JSONObject();
+        SlackController urlSlack = new SlackController();
+        String webhook = urlSlack.getSlackWebhook();
+        
+        Slack.URL = webhook;
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -121,7 +124,7 @@ public class AppDados {
                         looca.getRede().getParametros().getHostName());
                 monitoramentoDAO.insertMonitoramentoAzure(dataAtual, horaAtual, maquinaAtualAzure.getId());
                 Monitoramento monitoramentoAtualAzure = monitoramentoDAO.getMonitoramentoAzure(maquinaAtualAzure.getId());
-                
+                System.out.println(monitoramentoAtualAzure);
                 pacoteDAO.insertPacotesAzure(latencia,
                         pacotesEnviados,
                         pacotesRecebidos,
@@ -159,17 +162,16 @@ public class AppDados {
                             maquinaAtualAzure.getId()
                     );
                     
-//                    try {               
-//                        String nome = maquinaAtualAzure.getHostName();
-//                        json.put("text", 
-//                                "Uma de suas máquinas está com uso crítico da CPU!"
-//                                        + " Nome da Máquina: "+ nome);
-//
-//                        Slack.sendMessage(json);
-//
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
+                   try {               
+                        String nome = maquinaAtualAzure.getHostName();
+                        json.put("text", 
+                               "Uma de suas máquinas está com uso crítico da CPU!"
+                                        + " Nome da Máquina: "+ nome);
+
+                       Slack.sendMessage(json);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 }
                 
                 if (usoDisco <= verde) {
@@ -188,17 +190,17 @@ public class AppDados {
                             maquinaAtualAzure.getId()
                     );
                     
-//                    try {               
-//                        String nome = maquinaAtualAzure.getHostName();
-//                        json.put("text", 
-//                                "Uma de suas máquinas está com uso crítico do Disco!"
-//                                        + " Nome da Máquina: "+ nome);
-//
-//                        Slack.sendMessage(json);
-//
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
+                   try {               
+                        String nome = maquinaAtualAzure.getHostName();
+                        json.put("text", 
+                                "Uma de suas máquinas está com uso crítico do Disco!"
+                                        + " Nome da Máquina: "+ nome);
+
+                        Slack.sendMessage(json);
+
+                    } catch (Exception e) {
+                       e.printStackTrace();
+                    }
                 }
                 
                 if (usoRam <= verde) {
@@ -217,21 +219,21 @@ public class AppDados {
                             maquinaAtualAzure.getId()
                     );
                     
-//                    try {               
-//                        String nome = maquinaAtualAzure.getHostName();
-//                        json.put("text", 
-//                                "Uma de suas máquinas está com uso crítico do Disco!"
-//                                        + " Nome da Máquina: "+ nome);
-//
-//                        Slack.sendMessage(json);
-//
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
+                    try {               
+                        String nome = maquinaAtualAzure.getHostName();
+                        json.put("text", 
+                                "Uma de suas máquinas está com uso crítico do Disco!"
+                                        + " Nome da Máquina: "+ nome);
+
+                        Slack.sendMessage(json);
+
+                    } catch (Exception e) {
+                       e.printStackTrace();
+                    }
                 }
                 System.out.println("Monitoramento feito com sucesso, "
                         + "aguarde mais 1 minuto");
             }
         }, 0, 5000);//60000
-    }  
+    }
 }
